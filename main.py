@@ -1,103 +1,95 @@
-import json 
+import json
 
-with open("star.json", 'r', encoding='utf-8') as file: 
-    data = json.load(file) 
+with open("stars.json", "r", encoding="UTF-8") as file:
+    data = json.load(file)
 
-count = 0 
+count = 0
 
 while True:
     print("""
-       1: Вывести все записи 
-       2: Вывести запись по полю 
-       3: Добавить запись 
-       4: Удалить запись по полю 
-       5: Выйти из программы
+    Меню:
+    1 - Вывести все записи
+    2 - Вывести запись по полю
+    3 - Добавить запись
+    4 - Удалить запись по полю
+    5 - Выйти из программы
     """)
 
-    number = int(input("Введите номер действия: "))
+    n = int(input("Введите номер пункта: "))
 
-    if number == 1:
+    if n == 1:  # Вывести все записи
         for star in data:
             print(f"""
-            Номер записи: {star['id']}, 
-            Общее название: {star['name']},                       
-            Название созвездия: {star['constellation']}, 
-            Видно без телескопа: {star['is_visible']},    
-            Радиус: {star['radius']} 
+            Номер записи: {star['id']},
+            Общее название звезды: {star['name']},
+            Название созвездия: {star['constellation']},
+            Можно ли увидеть звезду без телескопа: {star['is_visible']},
+            Солнечный радиус звезды: {star['radius']},
             """)
         count += 1
 
-    elif number == 2:
-        id = int(input("Введите номер звезды: "))
-        find = False    
-        for star in data:
-            if id == star['id']:
+    elif n == 2:  # Вывести записи по полю
+        search = input("Введите id: ")
+
+        for i, star in enumerate(data):
+            if star['id'] == search:
                 print(f"""
-                Номер записи: {star['id']}, 
-                Общее название: {star['name']},                       
-                Название созвездия: {star['constellation']}, 
-                Видно без телескопа: {star['is_visible']},    
-                Радиус: {star['radius']} 
-                """)
-                find = True  
-                break  
-        count += 1
-        if not find:
-            print("Запись не найдена.")
- 
-    elif number == 3:
-        id = int(input("Введите номер звезды: "))
-        
-        exists = False
-        for star in data:
-            if star['id'] == id:
-                exists = True
+            Номер записи: {star['id']},
+            Общее название звезды: {star['name']},
+            Название созвездия: {star['constellation']},
+            Можно ли увидеть звезду без телескопа: {star['is_visible']},
+            Солнечный радиус звезды: {star['radius']},
+            """)
+                print(f"Позиция в словаре: {i}")
                 break
-        
-        if exists:
-            print("Такой номер уже существует.")
         else:
-            name = input("Введите название: ")  
-            latin_name = input("Введите название созвездия: ")  
-            is_visible = input("Введите, видно ли звезду без телескопа (да/нет): ")  
-            radius = float(input("Введите радиус: "))  
+            print("Не найдено")
+        count += 1
+
+    elif n == 3:  # Добавить запись
+        new_id = int(input("Введите id: "))
+        for star in data:
+            if star['id'] == new_id:
+                print("Звезда уже добавлена")
+                break
+        else:
+            new_name = str(input("Название звезды: "))
+            new_constellation = str(input("Название созвездия: "))
+            new_is_visible = bool(input("Можно ли увидеть звезду без телескопа: "))
+            new_radius = float(input("Солнечный радиус звезды: "))
 
             new_star = {
-                'id': id,
-                'name': name,
-                'latin_name': latin_name,
-                'is_visible': True if is_visible.lower() == 'да' else False, 
-                'radius': radius
+                "id": new_id,
+                "name": new_name,
+                "constellation": new_constellation,
+                "is_visible": new_is_visible,
+                "radius": new_radius
             }
 
-            data.append(new_star) 
-            with open("star.json", 'w', encoding='utf-8') as out_file: 
-                json.dump(data, out_file)
-            print("Звезда успешно добавлена.")
+            data.append(new_star)
+            with open("stars.json", "w",encoding="UTF-8") as new_file:
+                json.dump(data, new_file, ensure_ascii = False, indent=4)
+            print("Запись добавлена")
+        
         count += 1
 
-    elif number == 4:
-        id = int(input("Введите номер звезды: "))
-        find = False  
-
+    elif n == 4:  # Удалить запись по полю
+        del_id = int(input("Введите id для удаления: "))
         for star in data:
-            if id == star['id']:
-                data.remove(star)  
-                find = True  
-                break 
-
-        if not find:
-            print("Запись не найдена.")
+            if star['id'] == del_id:
+                data.remove(star)
+                with open("stars.json", "w",encoding="UTF-8") as new_file:
+                    json.dump(data, new_file, ensure_ascii = False, indent=4)
+                print("Запись удалена")
+                break
         else:
-            with open("star.json", 'w', encoding='utf-8') as out_file:
-                json.dump(data, out_file)
-            print("Запись успешно удалена.")
+            print("Запись не найдена")
         count += 1
 
-    elif number == 5:
-        print(f"""Программа завершена.
-               Кол-во операций: {count}""") 
+    elif n == 5:  # Выйти из программы
+        print("Выход из программы")
+        print("Количество выполненных операций с записями: ", count)
         break
+
     else:
-        print("Такого номера нет.")
-    
+        print("Ошибка")
